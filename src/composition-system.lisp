@@ -9,14 +9,15 @@
        (defparameter *generics* nil)
        (defparameter *composition-system-combination-factor* ,cn)
 
-       (defmacro define-target (name &optional (base-target 'default))
+       (defmacro define-target (name &optional (base-target 'default) (docstring ""))
+	 (declare (ignore docstring))
 	 `(defclass ,name (,base-target) ()))
 
-       (defmacro define-feature (name &optional args)
+       (defmacro define-feature (name &optional args (docstring ""))
 	 (let ((gen (symbol-append 'feature- name))
 	       (arg-names (if args (extract-parameter-names-from-lambda-list args)  nil)))
 	   `(progn
-	      (push (list (defgeneric ,gen ,',(loop for c from 1 to cn collect (cn c)))
+	      (push (list (defgeneric ,gen ,',(loop for c from 1 to cn collect (cn c)) (:documentation ,docstring))
 			  '(,name ,args (declare (ignorable ,@arg-names))))
 		    *generics*)
 	      (defmethod ,gen ,',(loop for c from 1 to cn collect `(,(cn c) t))))))
